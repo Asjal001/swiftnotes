@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import pino from 'pino'
 import pinoHttp from 'pino-http';
+import authRoutes from './routes/authRoutes.js'
 
 dotenv.config();
 const isDev = process.env.NODE_ENV !== 'production'
@@ -13,6 +14,7 @@ const logger = pino(
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use('/api/auth',authRoutes);
 app.use(pinoHttp({logger}));
 app.get('/api/health', (req, res)=>{
   res.sendStatus(200);
