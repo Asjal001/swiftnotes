@@ -1,8 +1,8 @@
 import * as authService from '../services/authService.js';
 
 export const signup=async(req,res,next)=>{
-  const {email,pass}=req.body;
-  if(!email||!pass){
+  const {email,pass}=req.body??{};
+  if(!email||!pass||typeof email!=='string'||typeof pass!=='string'){
     return res.status(400).json({error:'Email and password are required'});
   }
   try{
@@ -13,8 +13,8 @@ export const signup=async(req,res,next)=>{
   }
 };
 export const login=async(req,res,next)=>{
-  const {email,pass}=req.body;
-  if(!email||!pass){
+  const {email,pass}=req.body??{};
+  if(!email||!pass||typeof email!=='string'||typeof pass!=='string'){
     return res.status(400).json({error:'Email and password are required'});
   }
   try{

@@ -12,10 +12,10 @@ const logger = pino(
   isDev ? {transport: {target: 'pino-pretty', options: {colorize: true}}}:{}
 );
 const app = express();
+app.use(pinoHttp({logger}));
 app.use(cors());
 app.use(express.json());
 app.use('/api/auth',authRoutes);
-app.use(pinoHttp({logger}));
 app.get('/api/health', (req, res)=>{
   res.sendStatus(200);
 });

@@ -7,7 +7,7 @@ export const verifyToken=(req,res,next)=>{
   }
   const token=authHeader.slice(7);
   try{
-    req.user=kwt.verify(token,process.env.JWT_SECRET);
+    req.user=jwt.verify(token,process.env.JWT_SECRET);
     next();
   } catch{
     res.status(401).json({error:'Authentication failed'});
