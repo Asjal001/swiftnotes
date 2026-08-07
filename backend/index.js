@@ -13,7 +13,10 @@ const logger = pino(
 );
 const app = express();
 app.use(pinoHttp({logger}));
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  credentials: true
+}));
 app.use(express.json());
 app.use('/api/auth',authRoutes);
 app.use('/api/notes',noteRoutes);
@@ -21,9 +24,11 @@ app.get('/api/health', (req, res)=>{
   res.sendStatus(200);
 });
 app.use((err,req,res,next)=>{
-  const status = err.status || 500;
+  const status = typeof err.status === 'number' && err.status < 500 ? err.status : 500;
   req.log.error(err);
-  res.status(status).json({message: err.message});
+  res.status(status).json({
+    error: status === 500 ? 'Internal server error' : err.message
+  });
 });
 app.listen(PORT, ()=>{
   logger.info(`Server is listening on ${PORT}`);
