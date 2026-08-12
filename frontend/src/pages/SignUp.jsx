@@ -2,6 +2,7 @@ import {useState} from 'react';
 import {Link} from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import api from '../api/axios';
+import {Eye,EyeOff} from 'lucide-react';
 
 const SignUp=()=>{
   const {login}=useAuth();
@@ -10,6 +11,8 @@ const SignUp=()=>{
   const [confirmPassword,setConfirmPassword]=useState('');
   const [error,setError]=useState('');
   const [loading,setLoading]=useState(false);
+  const [showPassword,setShowPassword]=useState(false);
+  const [showConfirm,setShowConfirm]=useState(false);
   const handleSubmit=async(e)=>{
     e.preventDefault();
     if(password.length<8){
@@ -57,25 +60,33 @@ const SignUp=()=>{
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e)=>{setPassword(e.target.value);setError('');}}
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
-              placeholder="••••••••"
-            />
+            <div className="relative">
+              <input
+                type={showPassword?'text':'password'}
+                required
+                value={password}
+                onChange={(e)=>{setPassword(e.target.value);setError('');}}
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors pr-12"
+                placeholder="••••••••"
+              />
+              <button type="button" onClick={()=> setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+              {showPassword?<EyeOff className="w-5 h-5"/> : <Eye className="w-5 h-5" />}
+            </button>
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">Confirm Password</label>
-            <input
-              type="password"
-              required
-              value={confirmPassword}
-              onChange={(e)=>{setConfirmPassword(e.target.value);setError('');}}
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
-              placeholder="••••••••"
-            />
+            <div className="relative">
+              <input
+                type={showConfirm?'text':'password'}
+                required
+                value={confirmPassword}
+                onChange={(e)=>{setConfirmPassword(e.target.value);setError('');}}
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors pr-12"
+                placeholder="••••••••"
+              />
+              <button type="button" onClick={()=> setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"> {showConfirm?<EyeOff className="w-5 h-5"/> : <Eye className="w-5 h-5"/>} </button>
+            </div>
           </div>
           <button
             type="submit"
