@@ -6,6 +6,10 @@ import pinoHttp from 'pino-http';
 import authRoutes from './routes/authRoutes.js'
 import noteRoutes from './routes/noteRoutes.js'
 dotenv.config();
+if (!process.env.JWT_SECRET){
+  console.error('JWT_SECRET is not set, exiting');
+  process.exit(1);
+}
 const isDev = process.env.NODE_ENV !== 'production'
 const PORT = process.env.PORT || 5000;
 const logger = pino(
