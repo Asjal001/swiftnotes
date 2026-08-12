@@ -1,4 +1,5 @@
 import * as authService from '../services/authService.js';
+import jwt from 'jsonwebtoken';
 
 export const signup=async(req,res,next)=>{
   const rawEmail = req.body?.email;
@@ -9,8 +10,9 @@ export const signup=async(req,res,next)=>{
     return res.status(400).json({ error: 'Email and password are required' });
   }
   try{
-    const user = await authService.newUserRegisteration(email.toLowerCase().trim(),pass);
-    res.status(201).json({data:user});
+    const user = await authService.newUserRegisteration(email,pass);
+    const token = jwt.sign({userId:user.id},process.env.JWT_SECRET,{expiresIn:'1d'});
+    res.status(201).json({data:{ user,token}});
   } catch(err){
     next(err);
   }

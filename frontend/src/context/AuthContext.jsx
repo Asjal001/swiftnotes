@@ -24,7 +24,7 @@ export const AuthProvider=({children})=>{
     localStorage.setItem('user',JSON.stringify(userData));
     localStorage.setItem('token',token);
     setUser(userData);
-    navigate('/dashboard');
+    navigate('/');
   };
   const logout=()=>{
     localStorage.removeItem('user');
