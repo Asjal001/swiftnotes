@@ -4,7 +4,7 @@ import {Trash2} from 'lucide-react';
 import api from '../../api/axios';
 import DeleteNoteModal from './DeleteNoteModal';
 
-const NoteCard=({note,onDelete})=>{
+const NoteCard=({note,index,onDelete})=>{
   const [showModal,setShowModal] =useState(false);
   const [deleting,setDeleting] =useState(false);
   const [deleteError,setDeleteError]=useState('');
@@ -20,11 +20,20 @@ const NoteCard=({note,onDelete})=>{
       setDeleteError('Failed to delete. Try again.');
     }
   };
+  const borderColors=[
+    'border-b-indigo-400',
+    'border-b-emerald-400',
+    'border-b-amber-400',
+    'border-b-rose-400',
+    'border-b-sky-400',
+    'border-b-purple-400'
+  ];
+  const bottomBorderColor=borderColors[index% borderColors.length];
   return (
     <>
       <div className="relative">
         <Link
-          to={`/notes/${note.id}`} className="block bg-white border border-slate-100 rounded-2xl p-5 hover:shadow-md hover:border-slate-200 transition-all">
+          to={`/notes/${note.id}`} className={`block bg-white border border-slate-100 border-b-4 ${bottomBorderColor} rounded-2xl p-5 hover:shadow-md transition-all`}>
           <h3 className="font-semibold text-slate-900 text-base mb-1 truncate pr-8">{note.title}</h3>
           <p className="text-sm text-slate-400 mb-3">{date}</p>
           <p className="text-sm text-slate-500 line-clamp-2">{preview}</p>

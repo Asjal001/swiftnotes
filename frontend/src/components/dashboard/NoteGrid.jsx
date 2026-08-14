@@ -16,9 +16,9 @@ const NoteGrid=({notes=[],onDelete})=>{
     );
   }
   return (
-    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {notes.map(note => (
-        <NoteCard key={note.id} note={note} onDelete={onDelete}/>
+    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {notes.map((note,index) => (
+        <NoteCard key={note.id} index={index} note={note} onDelete={onDelete}/>
       ))}
     </div>
   );

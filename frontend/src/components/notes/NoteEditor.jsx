@@ -12,11 +12,10 @@ const NoteEditor=({content,onChange})=>{
     },
     editorProps:{
       attributes:{
-        class:'prose prose-slate max-w-none focus:outline-none min-h-[400px] text-slate-800 p-8',
+        class: 'prose prose-slate max-w-none focus:outline-none min-h-[200px] text-slate-800 p-8',
       },
     },
   });
-
   useEffect(()=>{
     if(!editor) return;
     const current=editor.getHTML();
