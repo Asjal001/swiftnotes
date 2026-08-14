@@ -17,6 +17,9 @@ const Dashboard=()=>{
       .catch(()=>setError('Failed to load notes'))
       .finally(()=>setLoading(false));
   },[]);
+  const handleDelete=(id)=>{
+    setNotes(prev=>prev.filter(note=>note.id!==id));
+  };
   const renderContent=()=>{
     if(loading) return(
       <div className="flex justify-center items-center py-24">
@@ -28,7 +31,7 @@ const Dashboard=()=>{
         <p className="text-sm text-red-400">{error}</p>
       </div>
     );
-    return <NoteGrid notes={notes} />;
+    return <NoteGrid notes={notes} onDelete={handleDelete}/>;
   };
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
