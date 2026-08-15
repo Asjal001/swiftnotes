@@ -92,42 +92,46 @@ const NotePage=()=>{
     );
   }
   return(
-    <div className="min-h-screen bg-white font-sans">
+    <div className="h-screen bg-white font-sans flex flex-col overflow-hidden">
       <Navbar />
-      <main className="max-w-4xl mx-auto px-4 py-10">
-        <div className="max-w-3xl mx-auto w-full px-8 py-2 flex flex-col">
+      <main className="flex-1 overflow-hidden flex flex-col max-w-4xl mx-auto w-full px-8">
+        <div className="shrink-0 py-4">
           <input
             type="text"
             value={title}
             onChange={(e)=>{setTitle(e.target.value);setSaveError('');}}
             placeholder="Note title"
-            className="text-3xl font-bold text-slate-900 placeholder-slate-300 border-none outline-none w-full mb-6 bg-transparent"
+            className="text-3xl font-bold text-slate-900 placeholder-slate-300 border-none outline-none w-full bg-transparent"
           />
+        </div>
+        <div className="flex-1 overflow-hidden min-h-0">
           <NoteEditor
             content={content}
             onChange={(val)=>{setContent(val);setSaveError('');}}
           />
         </div>
-        {saveError &&(
-          <div className="max-w-3xl mx-auto mt-6 mb-2 p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
-            <p className="text-sm font-medium text-red-700">{saveError}</p>
+        <div className="shrink-0 py-4">
+          {saveError && (
+            <div className="mb-3 p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
+              <p className="text-sm font-medium text-red-700">{saveError}</p>
+            </div>
+          )}
+          <div className="flex items-center justify-center gap-4">
+            <button
+              onClick={handleCancel}
+              className="px-6 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors shadow-sm"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="px-8 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50 shadow-sm"
+            >
+              {saving?'Saving...':'Save Note'}
+            </button>
           </div>
-        )}
-        <div className="flex items-center justify-center gap-4 mt-6 mb-8 py-2">
-          <button
-            onClick={handleCancel}
-            className="px-6 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors shadow-sm"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="px-8 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50 shadow-sm"
-          >
-            {saving ? 'Saving...' : 'Save Note'}
-          </button>
         </div>
         {showCancelModal && (
           <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">

@@ -12,7 +12,7 @@ const NoteEditor=({content,onChange})=>{
     },
     editorProps:{
       attributes:{
-        class: 'prose prose-slate max-w-none focus:outline-none min-h-[200px] text-slate-800 p-8',
+        class: 'prose prose-slate max-w-none focus:outline-none text-slate-800 p-8',
       },
     },
   });
@@ -24,9 +24,11 @@ const NoteEditor=({content,onChange})=>{
     }
   }, [content, editor]);
   return (
-    <div className="border border-slate-200 rounded-xl overflow-hidden">
+    <div className="border border-slate-200 rounded-xl overflow-hidden flex flex-col h-full">
       <EditorToolbar editor={editor} />
-      <EditorContent editor={editor} />
+      <div className="flex-1 overflow-y-auto">
+        <EditorContent editor={editor} />
+      </div>
     </div>
   );
 };
