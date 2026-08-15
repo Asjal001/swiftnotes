@@ -20,7 +20,7 @@ const NoteEditor=({content,onChange})=>{
     if(!editor) return;
     const current=editor.getHTML();
     if(content!==current){
-      editor.commands.setContent(content||'');
+      editor.commands.setContent(content||'',false);
     }
   }, [content, editor]);
   return (
