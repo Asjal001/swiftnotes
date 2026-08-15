@@ -157,7 +157,9 @@ const NotePage=()=>{
                   Keep editing
                 </button>
                 <button
-                  autoFocus onClick={() => navigate('/dashboard')}
+                  autoFocus onClick={()=>{ setShowCancelModal(false);
+                  navigate('/dashboard')
+                  }}
                   className="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors"
                 >
                   Discard

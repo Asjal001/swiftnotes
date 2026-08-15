@@ -14,9 +14,9 @@ const Navbar=()=>{
         </Link>
         <button
           onClick={logout}
-          className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-100 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] hover:shadow-md hover:border-slate-200 transition-all text-sm font-bold text-slate-800"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="w-4 h-4 text-indigo-600 stroke-[2.5]" />
           Logout
         </button>
       </div>
