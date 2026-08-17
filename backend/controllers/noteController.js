@@ -21,6 +21,15 @@ export const getNotes= async(req,res,next)=>{
     next(err);
   }
 };
+export const getNote=async(req,res,next)=>{
+  try{
+    const {id}=req.params;
+    const note=await noteService.getNote(id,req.user.userId);
+    res.json({data:note});
+  } catch(err){
+    next(err);
+  }
+};
 export const updateNote= async(req,res,next)=>{
   try{
     const {title,content}=req.body??{};

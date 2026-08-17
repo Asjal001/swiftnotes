@@ -18,6 +18,20 @@ export const getNotes=async(userId)=>{
     throw new AppError(err.message||'Failed to fetch notes',500);
   }
 };
+export const getNote=async(noteId,userId)=>{
+  try{
+    const note=await prisma.note.findFirst({
+      where:{id:noteId,userId }
+    }); 
+    if(!note){
+      throw new AppError('Note not found', 404);
+    }
+    return note;
+  } catch(err){
+    if(err instanceof AppError) throw err;
+    throw new AppError(err.message||'Failed to fetch note', 500);
+  }
+};
 export const updateNote=async(noteId,userId,title,content)=>{
   try{
     const note = await prisma.note.findFirst({where:{id:noteId,userId}});
