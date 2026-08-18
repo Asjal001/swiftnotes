@@ -20,9 +20,10 @@ const Dashboard=()=>{
   const handleDelete=(id)=>{
     setNotes(prev=>prev.filter(note=>note.id!==id));
   };
+  const normalizedSearchQuery=searchQuery.trim().toLowerCase();
   const filteredNotes=notes.filter(note=>
-    (note.title||'').toLowerCase().includes(searchQuery.toLowerCase())||
-    note.content?.replace(/<[^>]*>/g, ' ').toLowerCase().includes(searchQuery.toLowerCase())
+    (note.title||'').toLowerCase().includes(normalizedSearchQuery)||
+    note.content?.replace(/<[^>]*>/g, ' ').toLowerCase().includes(normalizedSearchQuery)
   );
   const renderContent=()=>{
     if(loading) return(
@@ -50,9 +51,9 @@ const Dashboard=()=>{
         </button>
       </div>
     );    
-    if(searchQuery && filteredNotes.length===0) return(
+    if(normalizedSearchQuery && filteredNotes.length===0) return(
       <div className="flex flex-col items-center justify-center py-24 text-center bg-white border-2 border-dashed border-slate-200 rounded-2xl max-w-xl mx-auto">
-        <Search className="w-10 h-10 text-slate-300 mb-4" />
+        <Search aria-hidden="true" className="w-10 h-10 text-slate-300 mb-4" />
         <h3 className="text-lg font-semibold text-slate-700 mb-1">No results found</h3>
         <p className="text-sm text-slate-400">No notes match "<span className="font-medium text-slate-500">{searchQuery}</span>"</p>
       </div>
@@ -71,8 +72,9 @@ const Dashboard=()=>{
               <h2 className="text-lg font-bold text-slate-900">Your Notes</h2>
             </div>
             <div className="relative flex-1 max-w-md w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
+                aria-label="Search notes"
                 type="text"
                 placeholder="Search notes..."
                 value={searchQuery}

@@ -1,7 +1,6 @@
 import * as userService from '../services/userService.js';
 export const getProfile=async(req,res,next)=>{
   try{
-    console.log("Decoded Token Data:", req.user);
     const user=await userService.getProfile(req.user.userId);
     res.json({data:user});
   } catch(err){

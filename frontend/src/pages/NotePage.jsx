@@ -168,6 +168,7 @@ const NotePage=()=>{
               <p className="text-sm text-slate-500 mb-5">Your unsaved changes will be lost.</p>
               <div className="flex justify-end gap-3">
                 <button
+                  autoFocus
                   onClick={() => {
                     setShowCancelModal(false);
                     setPendingAction(null);
@@ -177,7 +178,6 @@ const NotePage=()=>{
                   Keep editing
                 </button>
                 <button
-                  autoFocus 
                   onClick={() => { 
                     setShowCancelModal(false);
                     executeAction(pendingAction); 

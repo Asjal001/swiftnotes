@@ -211,8 +211,11 @@ const showPasswordSuccess=(msg)=>{
           </div>
         </div>
         <div className="bg-white border border-slate-100 rounded-2xl p-6 mb-6 shadow-sm overflow-hidden transition-all">
-          <div
-            className="flex justify-between items-center cursor-pointer select-none"
+          <button
+            type="button"
+            aria-expanded={isPasswordOpen}
+            aria-controls="password-content"
+            className="w-full flex justify-between items-center cursor-pointer select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/20 rounded-lg"
             onClick={()=> setIsPasswordOpen(!isPasswordOpen)}
           >
             <h2 className="text-base font-semibold text-slate-800">Change Password</h2>
@@ -221,9 +224,9 @@ const showPasswordSuccess=(msg)=>{
             ) : (
               <ChevronDown className="w-5 h-5 text-slate-400 hover:text-slate-600 transition-colors" />
             )}
-          </div>
+          </button>
           {isPasswordOpen &&(
-            <div className="mt-5 space-y-4 animate-in slide-in-from-top-2 fade-in duration-500">
+            <div id="password-content" className="mt-5 space-y-4 animate-in slide-in-from-top-2 fade-in duration-500">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">Current Password</label>
                 <div className="relative">
