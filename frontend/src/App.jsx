@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Dashboard from './pages/Dashboard';
 import NotePage from './pages/NotePage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
@@ -15,8 +16,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        {/* <Route path="/notes/new" element={<ProtectedRoute><NotePage /></ProtectedRoute>} /> */}
         <Route path="/notes/:id" element={<ProtectedRoute><NotePage /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AuthProvider>
