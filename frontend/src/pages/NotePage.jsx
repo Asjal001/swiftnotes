@@ -4,10 +4,12 @@ import {Loader2,AlertCircle} from 'lucide-react';
 import api from '../api/axios';
 import NoteEditor from '../components/notes/NoteEditor';
 import Navbar from '../components/Navbar';
+import useAuth from '../hooks/useAuth';
 
 const NotePage=()=>{
   const {id}=useParams();
   const navigate=useNavigate();
+  const {logout}=useAuth();
   const isNew=id==='new';
   const [title,setTitle]=useState('');
   const [content,setContent]=useState('');
@@ -16,6 +18,7 @@ const NotePage=()=>{
   const [loadError,setLoadError]=useState('');
   const [saveError,setSaveError]=useState('');
   const [showCancelModal,setShowCancelModal]=useState(false);
+  const [pendingAction,setPendingAction]=useState(null);
   const initialTitle=useRef('');
   const initialContent=useRef('');
   useEffect(()=>{
@@ -43,13 +46,25 @@ const NotePage=()=>{
     window.addEventListener('beforeunload',handleBeforeUnload);
     return()=>window.removeEventListener('beforeunload',handleBeforeUnload);
   },[title,content]);
-  const handleCancel=()=>{
+  const handleActionAttempt=(action)=>{
     const hasChanges=title!==initialTitle.current||content!==initialContent.current;
     if(hasChanges){
+      setPendingAction(action);
       setShowCancelModal(true);
-      return;
+    } else{
+      executeAction(action);
     }
-    navigate('/dashboard');
+  };
+  const executeAction=(action)=>{
+    if(!action) return;
+    if(action.type === 'logout'){
+      logout();
+    } else if(action.type === 'navigate'){
+      navigate(action.path);
+    }
+  };
+  const handleCancel=()=>{
+    handleActionAttempt({type:'navigate',path:'/dashboard'});
   };
   const handleSave=async()=>{
     if(!title.trim()){
@@ -64,6 +79,8 @@ const NotePage=()=>{
       } else{
         await api.patch(`/notes/${id}`,{title,content });
       }
+      initialTitle.current=title;
+      initialContent.current=content;
       navigate('/dashboard');
     } catch{
       setSaveError('Failed to save note. Please check your connection and try again.');
@@ -73,7 +90,7 @@ const NotePage=()=>{
   };
   if(loading){
     return (
-      <div className="min-h-screen bg-[#fafafc] font-sans">
+      <div className="min-h-screen bg-gradient-to-b from-white via-[#f8faff] to-[#f0f2f9] font-sans">
         <Navbar />
         <main className="max-w-4xl mx-auto px-8 py-32 flex flex-col items-center justify-center">
           <Loader2 className="w-10 h-10 text-indigo-500 animate-spin mb-4" />
@@ -84,7 +101,7 @@ const NotePage=()=>{
   }
   if(loadError){
     return(
-      <div className="min-h-screen bg-[#fafafc] font-sans">
+      <div className="min-h-screen bg-gradient-to-b from-white via-[#f8faff] to-[#f0f2f9] font-sans">
         <Navbar />
         <main className="max-w-4xl mx-auto px-8 py-32 flex flex-col items-center justify-center text-center">
           <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4 border border-red-100">
@@ -103,8 +120,8 @@ const NotePage=()=>{
     );
   }
   return(
-    <div className="h-screen bg-white font-sans flex flex-col overflow-hidden">
-      <Navbar />
+    <div className="h-screen bg-gradient-to-b from-white via-[#f8faff] to-[#f0f2f9] font-sans flex flex-col overflow-hidden">
+      <Navbar onActionAttempt={handleActionAttempt}/>
       <main className="flex-1 overflow-hidden flex flex-col max-w-4xl mx-auto w-full px-8">
         <div className="shrink-0 py-4">
           <input
@@ -145,20 +162,25 @@ const NotePage=()=>{
           </div>
         </div>
         {showCancelModal && (
-          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onKeyDown={(e)=>{if(e.key==='Escape') setShowCancelModal(false);}}>
+          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onKeyDown={(e)=>{if(e.key==='Escape'){setShowCancelModal(false); setPendingAction(null);}}}>
             <div role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title" className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-lg">
               <h3 id="cancel-modal-title" className="text-base font-semibold text-slate-900 mb-1">Discard changes?</h3>
               <p className="text-sm text-slate-500 mb-5">Your unsaved changes will be lost.</p>
               <div className="flex justify-end gap-3">
                 <button
-                  onClick={() => setShowCancelModal(false)}
+                  autoFocus
+                  onClick={() => {
+                    setShowCancelModal(false);
+                    setPendingAction(null);
+                  }}
                   className="px-4 py-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
                 >
                   Keep editing
                 </button>
                 <button
-                  autoFocus onClick={()=>{ setShowCancelModal(false);
-                  navigate('/dashboard')
+                  onClick={() => { 
+                    setShowCancelModal(false);
+                    executeAction(pendingAction); 
                   }}
                   className="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors"
                 >
