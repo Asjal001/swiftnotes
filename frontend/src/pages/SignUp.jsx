@@ -48,8 +48,9 @@ const SignUp=()=>{
         )}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Email address</label>
+            <label htmlFor="signup-email" className="block text-sm font-medium text-slate-700 mb-1.5">Email address</label>
             <input
+              id="signup-email"
               type="email"
               required
               value={email}
@@ -59,9 +60,10 @@ const SignUp=()=>{
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+            <label htmlFor="signup-password" className="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
             <div className="relative">
               <input
+                id="signup-password"
                 type={showPassword?'text':'password'}
                 required
                 value={password}
@@ -75,9 +77,10 @@ const SignUp=()=>{
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Confirm Password</label>
+            <label htmlFor="signup-confirm" className="block text-sm font-medium text-slate-700 mb-1.5">Confirm Password</label>
             <div className="relative">
               <input
+                id="signup-confirm"
                 type={showConfirm?'text':'password'}
                 required
                 value={confirmPassword}

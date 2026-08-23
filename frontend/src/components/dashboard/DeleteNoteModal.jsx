@@ -7,12 +7,14 @@ const DeleteNoteModal=({onCancel,onConfirm,loading,error})=>{
         {error && <p className="text-sm text-red-400 mb-4">{error}</p>}
         <div className="flex justify-end gap-3">
           <button
+            type="button"
             onClick={onCancel}
             className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 transition-colors"
           >
             Cancel
           </button>
           <button
+            type="button"
             onClick={onConfirm}
             disabled={loading}
             className="px-5 py-2 bg-red-500 text-white text-sm font-medium rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50"

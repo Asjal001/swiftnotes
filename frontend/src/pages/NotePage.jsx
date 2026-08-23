@@ -46,6 +46,17 @@ const NotePage=()=>{
     window.addEventListener('beforeunload',handleBeforeUnload);
     return()=>window.removeEventListener('beforeunload',handleBeforeUnload);
   },[title,content]);
+  useEffect(()=>{
+    if(!showCancelModal) return;
+    const handleKeyDown=(e)=>{
+      if (e.key==='Escape'){
+        setShowCancelModal(false);
+        setPendingAction(null);
+      }
+    };
+    window.addEventListener('keydown',handleKeyDown);
+    return ()=>window.removeEventListener('keydown',handleKeyDown);
+  },[showCancelModal]);
   const handleActionAttempt=(action)=>{
     const hasChanges=title!==initialTitle.current||content!==initialContent.current;
     if(hasChanges){
@@ -110,6 +121,7 @@ const NotePage=()=>{
           <h3 className="text-xl font-bold text-slate-900 mb-2">Note Unavailable</h3>
           <p className="text-sm text-slate-500 mb-6 max-w-sm">{loadError}</p>
           <button 
+            type="button"
             onClick={()=>navigate('/dashboard')}
             className="px-6 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors"
           >
@@ -147,12 +159,14 @@ const NotePage=()=>{
           )}
           <div className="flex items-center justify-center gap-4">
             <button
+              type="button"
               onClick={handleCancel}
               className="px-6 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors shadow-sm"
             >
               Cancel
             </button>
             <button
+              type="button"
               onClick={handleSave}
               disabled={saving}
               className="px-8 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50 shadow-sm"
@@ -162,12 +176,13 @@ const NotePage=()=>{
           </div>
         </div>
         {showCancelModal && (
-          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onKeyDown={(e)=>{if(e.key==='Escape'){setShowCancelModal(false); setPendingAction(null);}}}>
-            <div role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title" className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-lg">
+          <div tabIndex="-1" className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+            <dialog open aria-labelledby="cancel-modal-title" className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-lg m-0 border-0">
               <h3 id="cancel-modal-title" className="text-base font-semibold text-slate-900 mb-1">Discard changes?</h3>
               <p className="text-sm text-slate-500 mb-5">Your unsaved changes will be lost.</p>
               <div className="flex justify-end gap-3">
                 <button
+                  type="button"
                   autoFocus
                   onClick={() => {
                     setShowCancelModal(false);
@@ -178,6 +193,7 @@ const NotePage=()=>{
                   Keep editing
                 </button>
                 <button
+                  type="button"
                   onClick={() => { 
                     setShowCancelModal(false);
                     executeAction(pendingAction); 
@@ -187,7 +203,7 @@ const NotePage=()=>{
                   Discard
                 </button>
               </div>
-            </div>
+            </dialog>
           </div>
         )}
       </main>

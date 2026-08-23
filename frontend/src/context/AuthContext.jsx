@@ -1,4 +1,4 @@
-import {createContext,useState,useEffect} from 'react';
+import {createContext,useState,useEffect,useMemo} from 'react';
 import {useNavigate} from 'react-router-dom';
 
 export const AuthContext=createContext();
@@ -32,8 +32,14 @@ export const AuthProvider=({children})=>{
     setUser(null);
     navigate('/login');
   };
+  const contextValue=useMemo(()=>({
+    user,
+    login,
+    logout,
+    loading
+  }),[user,login,logout,loading]);
   return(
-    <AuthContext.Provider value={{user,login,logout,loading}}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

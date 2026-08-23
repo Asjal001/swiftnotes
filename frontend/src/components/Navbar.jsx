@@ -1,11 +1,10 @@
-import {Link,useLocation,useNavigate} from 'react-router-dom';
+import {Link,useLocation} from 'react-router-dom';
 import {LogOut} from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 
 const Navbar=({onActionAttempt})=>{
   const {logout}=useAuth();
   const location=useLocation();
-  const navigate=useNavigate();
   const isActive=(path)=>location.pathname===path;
   const handleNavClick=(e,path)=>{
     if(onActionAttempt){
@@ -57,6 +56,7 @@ const Navbar=({onActionAttempt})=>{
         </div>
         <div className="flex-1 flex justify-end">
           <button
+            type="button"
             onClick={handleLogoutClick}
             className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-100 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] hover:shadow-md hover:border-slate-200 transition-all text-sm font-bold text-slate-800"
           >

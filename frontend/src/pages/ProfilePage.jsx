@@ -52,6 +52,17 @@ const ProfilePage=()=>{
   useEffect(()=>{
     return()=>{ mountedRef.current=false;};
   },[]);
+  useEffect(()=>{
+    if(!showUnsavedModal) return;
+    const handleKeyDown=(e)=>{
+      if(e.key==='Escape'){
+        setShowUnsavedModal(false);
+        setPendingAction(null);
+      }
+    };
+    window.addEventListener('keydown',handleKeyDown);
+    return ()=>window.removeEventListener('keydown',handleKeyDown);
+  },[showUnsavedModal]);
   const handleActionAttempt=(action)=>{
     const hasProfileChanges=profile.name!==initialProfile.current.name||profile.bio!==initialProfile.current.bio;
     const hasPasswordChanges=passwords.currentPassword||passwords.newPassword||passwords.confirmPassword;    
@@ -159,8 +170,9 @@ const showPasswordSuccess=(msg)=>{
           <h2 className="text-base font-semibold text-slate-800 mb-5">Personal Information</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Full Name</label>
+              <label htmlFor="profile-name" className="block text-sm font-medium text-slate-700 mb-1.5">Full Name</label>
               <input
+                id="profile-name"
                 type="text"
                 value={profile.name}
                 onChange={(e)=>{setProfile(prev=>({...prev,name:e.target.value})); setProfileError(''); setProfileSuccess('');}}
@@ -169,8 +181,9 @@ const showPasswordSuccess=(msg)=>{
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+              <label htmlFor="profile-email" className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
               <input
+                id="profile-email"
                 type="email"
                 value={profile.email}
                 disabled
@@ -178,8 +191,9 @@ const showPasswordSuccess=(msg)=>{
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Bio</label>
+              <label htmlFor="profile-bio" className="block text-sm font-medium text-slate-700 mb-1.5">Bio</label>
               <textarea
+                id="profile-bio"
                 value={profile.bio}
                 onChange={(e)=>{setProfile(prev=>({...prev,bio:e.target.value})); setProfileError(''); setProfileSuccess('');}}
                 placeholder="Tell us a little about yourself"
@@ -202,6 +216,7 @@ const showPasswordSuccess=(msg)=>{
           )}
           <div className="flex justify-center mt-5">
             <button
+              type="button"
               onClick={handleProfileSave}
               disabled={savingProfile}
               className="px-6 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors disabled:opacity-50 shadow-sm"
@@ -228,9 +243,10 @@ const showPasswordSuccess=(msg)=>{
           {isPasswordOpen &&(
             <div id="password-content" className="mt-5 space-y-4 animate-in slide-in-from-top-2 fade-in duration-500">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Current Password</label>
+                <label htmlFor="current-password" className="block text-sm font-medium text-slate-700 mb-1.5">Current Password</label>
                 <div className="relative">
                   <input
+                    id="current-password"
                     type={showPwd.current?'text':'password'}
                     value={passwords.currentPassword}
                     onChange={(e)=>{ setPasswords(prev =>({...prev, currentPassword:e.target.value})); setPasswordError(''); setPasswordSuccess('');}}
@@ -243,9 +259,10 @@ const showPasswordSuccess=(msg)=>{
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">New Password</label>
+                <label htmlFor="new-password" className="block text-sm font-medium text-slate-700 mb-1.5">New Password</label>
                 <div className="relative">
                   <input
+                    id="new-password"
                     type={showPwd.new ? 'text' : 'password'}
                     value={passwords.newPassword}
                     onChange={(e)=>{ setPasswords(prev=>({...prev,newPassword:e.target.value})); setPasswordError(''); setPasswordSuccess('');}}
@@ -258,9 +275,10 @@ const showPasswordSuccess=(msg)=>{
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Confirm New Password</label>
+                <label htmlFor="confirm-password" className="block text-sm font-medium text-slate-700 mb-1.5">Confirm New Password</label>
                 <div className="relative">
                   <input
+                    id="confirm-password"
                     type={showPwd.confirm?'text':'password'}
                     value={passwords.confirmPassword}
                     onChange={(e)=>{ setPasswords(prev=>({...prev,confirmPassword:e.target.value})); setPasswordError(''); setPasswordSuccess('');}}
@@ -286,6 +304,7 @@ const showPasswordSuccess=(msg)=>{
               )}
               <div className="flex justify-center mt-5">
                 <button
+                  type="button"
                   onClick={handlePasswordChange}
                   disabled={savingPassword}
                   className="px-6 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors disabled:opacity-50 shadow-sm"
@@ -301,6 +320,7 @@ const showPasswordSuccess=(msg)=>{
           <p className="text-sm text-slate-500 mb-5">Permanently delete your account and all your notes. This cannot be undone.</p>
           <div className="flex justify-center">
             <button
+              type="button"
               onClick={()=>setShowDeleteModal(true)}
               className="px-6 py-2.5 bg-red-500 text-white text-sm font-medium rounded-xl hover:bg-red-600 transition-colors shadow-sm"
             >
@@ -309,8 +329,8 @@ const showPasswordSuccess=(msg)=>{
           </div>
         </div>
         {showDeleteModal && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-            <div role="dialog" aria-modal="true" aria-labelledby="delete-modal-title" className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-lg">
+          <div tabIndex="-1" className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+            <dialog open aria-labelledby="delete-modal-title" className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-lg m-0 border-0">
               <h3 id="delete-modal-title" className="text-lg font-semibold text-slate-900 mb-2">Delete account?</h3>
               <p className="text-sm text-slate-500 mb-4">All your notes will be permanently deleted. This action cannot be undone.</p>
               {deleteError &&(
@@ -321,6 +341,7 @@ const showPasswordSuccess=(msg)=>{
               )}
               <div className="flex justify-end gap-3">
                 <button
+                  type="button"
                   autoFocus
                   onClick={()=>{ setShowDeleteModal(false); setDeleteError(''); }}
                   className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 transition-colors"
@@ -328,6 +349,7 @@ const showPasswordSuccess=(msg)=>{
                   Cancel
                 </button>
                 <button
+                  type="button"
                   onClick={handleDeleteAccount}
                   disabled={deleting}
                   className="px-5 py-2 bg-red-500 text-white text-sm font-medium rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50"
@@ -335,16 +357,17 @@ const showPasswordSuccess=(msg)=>{
                   {deleting?'Deleting...':'Delete'}
                 </button>
               </div>
-            </div>
+            </dialog>
           </div>
         )}
         {showUnsavedModal &&(
-          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onKeyDown={(e)=>{if(e.key==='Escape') setShowUnsavedModal(false);}}>
-            <div role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title" className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-lg">
+          <div tabIndex="-1" className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+            <dialog open aria-labelledby="cancel-modal-title" className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-lg m-0 border-0">
               <h3 id="cancel-modal-title" className="text-base font-semibold text-slate-900 mb-1">Discard changes?</h3>
               <p className="text-sm text-slate-500 mb-5">Your unsaved changes will be lost.</p>
               <div className="flex justify-end gap-3">
                 <button
+                  type="button"
                   onClick={()=>{
                     setShowUnsavedModal(false);
                     setPendingAction(null);
@@ -354,6 +377,7 @@ const showPasswordSuccess=(msg)=>{
                   Keep editing
                 </button>
                 <button
+                  type="button"
                   autoFocus 
                   onClick={()=>{ 
                     setShowUnsavedModal(false);
@@ -364,7 +388,7 @@ const showPasswordSuccess=(msg)=>{
                   Discard
                 </button>
               </div>
-            </div>
+            </dialog>
           </div>
         )}
       </main>
