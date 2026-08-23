@@ -1,4 +1,4 @@
-import {render,screen} from '@testing-library/react';
+import {render,screen,waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {MemoryRouter} from 'react-router-dom';
 import Login from '../pages/Login';
@@ -32,10 +32,13 @@ describe('Login Component',()=>{
     api.post.mockImplementationOnce(()=>new Promise((resolve)=>{resolveApi=resolve;}));
     await user.type(screen.getByPlaceholderText('name@example.com'),'test@test.com');
     await user.type(screen.getByPlaceholderText('••••••••'),'password123');
-    user.click(screen.getByRole('button',{name:'Sign in'}));
+    await user.click(screen.getByRole('button',{name:'Sign in'}));
     expect(await screen.findByRole('button',{name:'Signing in...'})).toBeInTheDocument();
     expect(screen.getByRole('button',{name:'Signing in...'})).toBeDisabled();
     resolveApi({data:{data:{user:{},token:'token123'}}});
+    await waitFor(()=>{
+      expect(mockLogin).toHaveBeenCalled();
+    });
   });
   it('shows API error message when login request fails',async()=>{
     const user=userEvent.setup();

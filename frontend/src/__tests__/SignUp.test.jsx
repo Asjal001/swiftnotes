@@ -1,4 +1,4 @@
-import {render,screen} from '@testing-library/react';
+import {render,screen,waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {MemoryRouter} from 'react-router-dom';
 import SignUp from '../pages/SignUp';
@@ -61,10 +61,13 @@ describe('SignUp Component',()=>{
     await user.type(screen.getByPlaceholderText('name@example.com'),'test@test.com');
     await user.type(passwordInputs[0],'password123');
     await user.type(passwordInputs[1],'password123');
-    user.click(screen.getByRole('button',{name:'Sign up'}));
+    await user.click(screen.getByRole('button',{name:'Sign up'}));
     expect(await screen.findByRole('button',{name:'Creating account...'})).toBeInTheDocument();
     expect(screen.getByRole('button',{name:'Creating account...'})).toBeDisabled();
     resolveApi({data:{data:{user:{},token:'token'}}});
+    await waitFor(()=>{
+      expect(mockLogin).toHaveBeenCalled();
+    });
   });
   it('shows API error message when signup request fails',async()=>{
     const user=userEvent.setup();
