@@ -52,17 +52,6 @@ const ProfilePage=()=>{
   useEffect(()=>{
     return()=>{ mountedRef.current=false;};
   },[]);
-  useEffect(()=>{
-    if(!showUnsavedModal) return;
-    const handleKeyDown=(e)=>{
-      if(e.key==='Escape'){
-        setShowUnsavedModal(false);
-        setPendingAction(null);
-      }
-    };
-    window.addEventListener('keydown',handleKeyDown);
-    return ()=>window.removeEventListener('keydown',handleKeyDown);
-  },[showUnsavedModal]);
   const handleActionAttempt=(action)=>{
     const hasProfileChanges=profile.name!==initialProfile.current.name||profile.bio!==initialProfile.current.bio;
     const hasPasswordChanges=passwords.currentPassword||passwords.newPassword||passwords.confirmPassword;    
@@ -328,68 +317,76 @@ const showPasswordSuccess=(msg)=>{
             </button>
           </div>
         </div>
-        {showDeleteModal && (
-          <div tabIndex="-1" className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-            <dialog open aria-labelledby="delete-modal-title" className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-lg m-0 border-0">
-              <h3 id="delete-modal-title" className="text-lg font-semibold text-slate-900 mb-2">Delete account?</h3>
-              <p className="text-sm text-slate-500 mb-4">All your notes will be permanently deleted. This action cannot be undone.</p>
-              {deleteError &&(
-                <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-                  <p className="text-sm text-red-600">{deleteError}</p>
-                </div>
-              )}
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  autoFocus
-                  onClick={()=>{ setShowDeleteModal(false); setDeleteError(''); }}
-                  className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleDeleteAccount}
-                  disabled={deleting}
-                  className="px-5 py-2 bg-red-500 text-white text-sm font-medium rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50"
-                >
-                  {deleting?'Deleting...':'Delete'}
-                </button>
+        {showDeleteModal &&(
+          <dialog
+            ref={(el)=>{if(el&&!el.open) el.showModal();}}
+            onCancel={()=>{setShowDeleteModal(false);setDeleteError('');}}
+            onClose={()=>{setShowDeleteModal(false);setDeleteError('');}}
+            aria-labelledby="delete-modal-title"
+            className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-lg border-0 backdrop:bg-black/40"
+          >
+            <h3 id="delete-modal-title" className="text-lg font-semibold text-slate-900 mb-2">Delete account?</h3>
+            <p className="text-sm text-slate-500 mb-4">All your notes will be permanently deleted. This action cannot be undone.</p>
+            {deleteError&&(
+              <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                <p className="text-sm text-red-600">{deleteError}</p>
               </div>
-            </dialog>
-          </div>
+            )}
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                autoFocus
+                onClick={()=>{setShowDeleteModal(false);setDeleteError('');}}
+                className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteAccount}
+                disabled={deleting}
+                className="px-5 py-2 bg-red-500 text-white text-sm font-medium rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50"
+              >
+                {deleting?'Deleting...':'Delete'}
+              </button>
+            </div>
+          </dialog>
         )}
         {showUnsavedModal &&(
-          <div tabIndex="-1" className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-            <dialog open aria-labelledby="cancel-modal-title" className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-lg m-0 border-0">
-              <h3 id="cancel-modal-title" className="text-base font-semibold text-slate-900 mb-1">Discard changes?</h3>
-              <p className="text-sm text-slate-500 mb-5">Your unsaved changes will be lost.</p>
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={()=>{
-                    setShowUnsavedModal(false);
-                    setPendingAction(null);
-                  }}
-                  className="px-4 py-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
-                >
-                  Keep editing
-                </button>
-                <button
-                  type="button"
-                  autoFocus 
-                  onClick={()=>{ 
-                    setShowUnsavedModal(false);
-                    executeAction(pendingAction); 
-                  }}
-                  className="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors"
-                >
-                  Discard
-                </button>
-              </div>
-            </dialog>
-          </div>
+          <dialog
+            ref={(el)=>{if(el&&!el.open) el.showModal();}}
+            onCancel={()=>{setShowUnsavedModal(false);setPendingAction(null);}}
+            onClose={()=>{setShowUnsavedModal(false);setPendingAction(null);}}
+            aria-labelledby="cancel-modal-title"
+            className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-lg border-0 backdrop:bg-black/30"
+          >
+            <h3 id="cancel-modal-title" className="text-base font-semibold text-slate-900 mb-1">Discard changes?</h3>
+            <p className="text-sm text-slate-500 mb-5">Your unsaved changes will be lost.</p>
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={()=>{
+                  setShowUnsavedModal(false);
+                  setPendingAction(null);
+                }}
+                className="px-4 py-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
+              >
+                Keep editing
+              </button>
+              <button
+                type="button"
+                autoFocus 
+                onClick={()=>{ 
+                  setShowUnsavedModal(false);
+                  executeAction(pendingAction); 
+                }}
+                className="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors"
+              >
+                Discard
+              </button>
+            </div>
+          </dialog>
         )}
       </main>
     </div>
