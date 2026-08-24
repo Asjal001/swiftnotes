@@ -323,7 +323,7 @@ const showPasswordSuccess=(msg)=>{
             onCancel={()=>{setShowDeleteModal(false);setDeleteError('');}}
             onClose={()=>{setShowDeleteModal(false);setDeleteError('');}}
             aria-labelledby="delete-modal-title"
-            className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-lg border-0 backdrop:bg-black/40"
+            className="m-auto bg-white rounded-2xl p-6 max-w-sm w-full shadow-lg border-0 backdrop:bg-black/40"
           >
             <h3 id="delete-modal-title" className="text-lg font-semibold text-slate-900 mb-2">Delete account?</h3>
             <p className="text-sm text-slate-500 mb-4">All your notes will be permanently deleted. This action cannot be undone.</p>
@@ -359,7 +359,7 @@ const showPasswordSuccess=(msg)=>{
             onCancel={()=>{setShowUnsavedModal(false);setPendingAction(null);}}
             onClose={()=>{setShowUnsavedModal(false);setPendingAction(null);}}
             aria-labelledby="cancel-modal-title"
-            className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-lg border-0 backdrop:bg-black/30"
+            className="m-auto bg-white rounded-2xl p-6 max-w-sm w-full shadow-lg border-0 backdrop:bg-black/30"
           >
             <h3 id="cancel-modal-title" className="text-base font-semibold text-slate-900 mb-1">Discard changes?</h3>
             <p className="text-sm text-slate-500 mb-5">Your unsaved changes will be lost.</p>
