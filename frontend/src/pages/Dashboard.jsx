@@ -23,7 +23,7 @@ const Dashboard=()=>{
   const normalizedSearchQuery=searchQuery.trim().toLowerCase();
   const filteredNotes=notes.filter(note=>
     (note.title||'').toLowerCase().includes(normalizedSearchQuery)||
-    note.content?.replace(/<[^>]*>/g, ' ').toLowerCase().includes(normalizedSearchQuery)
+    note.content?.replace(/<[^>]{0,500}>/g, ' ').toLowerCase().includes(normalizedSearchQuery)
   );
   const renderContent=()=>{
     if(loading) return(
@@ -43,6 +43,7 @@ const Dashboard=()=>{
           {error}. Please check your internet connection or make sure the server is running.
         </p>
         <button 
+          type="button"
           onClick={() => window.location.reload()}
           className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors"
         >

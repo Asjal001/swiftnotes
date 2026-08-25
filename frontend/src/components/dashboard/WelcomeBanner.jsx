@@ -4,7 +4,12 @@ import {Lightbulb,StickyNote} from 'lucide-react';
 const WelcomeBanner=()=>{
   const {user}=useAuth();
   const hour=new Date().getHours();
-  const greeting=hour<12?'Good morning':hour<18?'Good afternoon':'Good evening';
+  let greeting='Good evening';
+  if(hour<12){
+    greeting='Good morning';
+  } else if(hour<18){
+    greeting = 'Good afternoon';
+  }
   const rawName=user?.email?.split('@')[0].split('.')[0]||'Guest';
   const name=rawName.charAt(0).toUpperCase()+rawName.slice(1);
   return(

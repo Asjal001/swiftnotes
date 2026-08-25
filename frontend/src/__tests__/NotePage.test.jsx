@@ -92,4 +92,55 @@ describe('NotePage Component',()=>{
     await user.click(screen.getByRole('button',{name:'Discard'}));
     expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
   });
+  it('loads existing note successfully and populates title and content', async () => {
+    useParams.mockReturnValue({ id: '123' });
+    api.get.mockResolvedValueOnce({ data: { data: { title: 'Existing Note', content: 'Existing Body' } } });
+    render(<NotePage />);
+    expect(await screen.findByDisplayValue('Existing Note')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Existing Body')).toBeInTheDocument();
+  });
+  it('navigates to dashboard when "Back to Dashboard" is clicked after load error', async () => {
+    useParams.mockReturnValue({ id: '123' });
+    api.get.mockRejectedValueOnce(new Error());
+    const user = userEvent.setup();
+    render(<NotePage />);
+    const backBtn = await screen.findByRole('button', { name: 'Back to Dashboard' });
+    await user.click(backBtn);
+    expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+  });
+  it('saves an existing note via patch and redirects to dashboard', async () => {
+    useParams.mockReturnValue({ id: '123' });
+    api.get.mockResolvedValueOnce({ data: { data: { title: 'Existing Note', content: 'Existing Body' } } });
+    api.patch.mockResolvedValueOnce({ data: { success: true } });
+    const user = userEvent.setup();
+    render(<NotePage />);
+    await waitFor(() => expect(screen.queryByText('Loading your note...')).not.toBeInTheDocument());   
+    await user.type(screen.getByDisplayValue('Existing Note'), ' Updated');
+    await user.click(screen.getByRole('button', { name: 'Save Note' }));
+    await waitFor(() => {
+      expect(api.patch).toHaveBeenCalledWith('/notes/123', {
+        title: 'Existing Note Updated',
+        content: 'Existing Body',
+      });
+      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+    });
+  });
+  it('shows error when saving note fails on server', async () => {
+    useParams.mockReturnValue({ id: 'new' });
+    api.post.mockRejectedValueOnce(new Error());
+    const user = userEvent.setup();
+    render(<NotePage />);
+    await user.type(screen.getByPlaceholderText('Note title'), 'New Title');
+    await user.click(screen.getByRole('button', { name: 'Save Note' }));
+    expect(await screen.findByText('Failed to save note. Please check your connection and try again.')).toBeInTheDocument();
+  });
+  it('prevents unload when there are unsaved changes', async () => {
+    useParams.mockReturnValue({ id: 'new' });
+    const user = userEvent.setup();
+    render(<NotePage />);
+    await user.type(screen.getByPlaceholderText('Note title'), 'Changed Title');
+    const event = new Event('beforeunload', { cancelable: true });
+    window.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(true);
+  });
 });

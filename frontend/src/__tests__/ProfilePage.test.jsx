@@ -94,4 +94,113 @@ describe('ProfilePage Component',()=>{
     await user.click(screen.getByTestId('mock-nav'));
     expect(screen.getByText('Discard changes?')).toBeInTheDocument();
   });
+  it('updates profile successfully when changes are made',async()=>{
+    api.get.mockResolvedValueOnce(mockProfileData);
+    api.patch.mockResolvedValueOnce({data:{data:{name:'Updated Name',bio:'Updated Bio'}}});
+    const user=userEvent.setup();
+    render(<ProfilePage/>);
+    await waitFor(()=>expect(screen.queryByText('Loading profile...')).not.toBeInTheDocument());
+    await user.type(screen.getByPlaceholderText('Your full name'),' New');
+    await user.click(screen.getByRole('button',{name:'Save Changes'}));
+    expect(await screen.findByText('Profile updated successfully')).toBeInTheDocument();
+  });
+  it('shows error message when updating profile fails',async()=>{
+    api.get.mockResolvedValueOnce(mockProfileData);
+    api.patch.mockRejectedValueOnce({response:{data:{error:'Failed to update profile'}}});
+    const user=userEvent.setup();
+    render(<ProfilePage/>);
+    await waitFor(()=>expect(screen.queryByText('Loading profile...')).not.toBeInTheDocument());
+    await user.type(screen.getByPlaceholderText('Your full name'),' New');
+    await user.click(screen.getByRole('button',{name:'Save Changes'}));
+    expect(await screen.findByText('Failed to update profile')).toBeInTheDocument();
+  });
+ it('updates password successfully',async()=>{
+    api.get.mockResolvedValueOnce(mockProfileData);
+    api.patch.mockResolvedValueOnce({data:{message:'Password changed'}});
+    const user=userEvent.setup();
+    render(<ProfilePage/>);
+    await waitFor(()=>expect(screen.queryByText('Loading profile...')).not.toBeInTheDocument());
+    await user.click(screen.getByRole('button',{name:'Change Password'}));
+    const inputs=screen.getAllByPlaceholderText('••••••••');
+    await user.type(inputs[0],'oldpass123');
+    await user.type(inputs[1],'newpassword123');
+    await user.type(inputs[2],'newpassword123');
+    await user.click(screen.getByRole('button',{name:'Update Password'}));
+    await waitFor(()=>{
+      expect(api.patch).toHaveBeenCalledWith('/user/password',{
+        currentPassword:'oldpass123',
+        newPassword:'newpassword123',
+      });
+    });
+  });
+  it('shows error when password update fails on server',async()=>{
+    api.get.mockResolvedValueOnce(mockProfileData);
+    api.patch.mockRejectedValueOnce({response:{data:{error:'Invalid current password'}}});
+    const user=userEvent.setup();
+    render(<ProfilePage/>);
+    await waitFor(()=>expect(screen.queryByText('Loading profile...')).not.toBeInTheDocument());
+    await user.click(screen.getByRole('button',{name:'Change Password'}));
+    const inputs=screen.getAllByPlaceholderText('••••••••');
+    await user.type(inputs[0],'wrongpass123');
+    await user.type(inputs[1],'newpassword123');
+    await user.type(inputs[2],'newpassword123');
+    await user.click(screen.getByRole('button',{name:'Update Password'}));
+    expect(await screen.findByText('Invalid current password')).toBeInTheDocument();
+  });
+  it('deletes account successfully and redirects',async()=>{
+    api.get.mockResolvedValueOnce(mockProfileData);
+    api.delete.mockResolvedValueOnce({});
+    const user=userEvent.setup();
+    render(<ProfilePage/>);
+    await waitFor(()=>expect(screen.queryByText('Loading profile...')).not.toBeInTheDocument());
+    await user.click(screen.getByRole('button',{name:'Delete Account'}));
+    await user.click(screen.getByRole('button',{name:'Delete'}));
+    await waitFor(()=>{
+      expect(mockLogout).toHaveBeenCalled();
+      expect(mockNavigate).toHaveBeenCalledWith('/');
+    });
+  });
+  it('shows error when account deletion fails',async()=>{
+    api.get.mockResolvedValueOnce(mockProfileData);
+    api.delete.mockRejectedValueOnce(new Error());
+    const user=userEvent.setup();
+    render(<ProfilePage/>);
+    await waitFor(()=>expect(screen.queryByText('Loading profile...')).not.toBeInTheDocument());
+    await user.click(screen.getByRole('button',{name:'Delete Account'}));
+    await user.click(screen.getByRole('button',{name:'Delete'}));
+    expect(await screen.findByText('Failed to delete account. Try again.')).toBeInTheDocument();
+  });
+  it('navigates directly if there are no unsaved changes',async()=>{
+    api.get.mockResolvedValueOnce(mockProfileData);
+    const user=userEvent.setup();
+    render(<ProfilePage/>);
+    await waitFor(()=>expect(screen.queryByText('Loading profile...')).not.toBeInTheDocument());
+    await user.click(screen.getByTestId('mock-nav'));
+    expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+  });
+  it('handles "Keep editing" and "Discard" in unsaved changes modal',async()=>{
+    api.get.mockResolvedValueOnce(mockProfileData);
+    const user=userEvent.setup();
+    render(<ProfilePage/>);
+    await waitFor(()=>expect(screen.queryByText('Loading profile...')).not.toBeInTheDocument());
+    await user.type(screen.getByPlaceholderText('Your full name'),' Updated');
+    await user.click(screen.getByTestId('mock-nav'));
+    expect(screen.getByText('Discard changes?')).toBeInTheDocument();
+    await user.click(screen.getByRole('button',{name:'Keep editing'}));
+    expect(screen.queryByText('Discard changes?')).not.toBeInTheDocument();
+    await user.click(screen.getByTestId('mock-nav'));
+    expect(screen.getByText('Discard changes?')).toBeInTheDocument();
+    await user.click(screen.getByRole('button',{name:'Discard'}));
+    expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+  });
+  it('prevents unload when there are unsaved changes',async()=>{
+    api.get.mockResolvedValueOnce(mockProfileData);
+    const user=userEvent.setup();
+    render(<ProfilePage/>);
+    await waitFor(()=>expect(screen.queryByText('Loading profile...')).not.toBeInTheDocument());
+    await user.type(screen.getByPlaceholderText('Your full name'),' Changed');
+    const event=new Event('beforeunload',{cancelable:true});
+    window.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(true);
+  });
 });

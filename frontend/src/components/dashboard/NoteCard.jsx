@@ -8,7 +8,7 @@ const NoteCard=({note,index,onDelete})=>{
   const [showModal,setShowModal] =useState(false);
   const [deleting,setDeleting] =useState(false);
   const [deleteError,setDeleteError]=useState('');
-  const preview=note.content?.replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/gi, ' ').replace(/\s+/g, ' ').trim().slice(0, 100)||'No content';
+  const preview=note.content?.replace(/<[^>]{0,500}>/g, ' ').replace(/&[a-z]{1,10};/gi, ' ').replace(/\s+/g, ' ').trim().slice(0, 100)||'No content';
   const date=note.createdAt?new Date(note.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year: 'numeric'}): '—';
   const handleDelete=async()=>{
     setDeleting(true);
@@ -39,6 +39,7 @@ const NoteCard=({note,index,onDelete})=>{
           <p className="text-sm text-slate-500 line-clamp-2">{preview}</p>
         </Link>
         <button
+          type="button"
           onClick={(e)=>{
             e.preventDefault();
             setShowModal(true);

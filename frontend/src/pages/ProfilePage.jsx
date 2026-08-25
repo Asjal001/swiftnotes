@@ -159,8 +159,9 @@ const showPasswordSuccess=(msg)=>{
           <h2 className="text-base font-semibold text-slate-800 mb-5">Personal Information</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Full Name</label>
+              <label htmlFor="profile-name" className="block text-sm font-medium text-slate-700 mb-1.5">Full Name</label>
               <input
+                id="profile-name"
                 type="text"
                 value={profile.name}
                 onChange={(e)=>{setProfile(prev=>({...prev,name:e.target.value})); setProfileError(''); setProfileSuccess('');}}
@@ -169,8 +170,9 @@ const showPasswordSuccess=(msg)=>{
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+              <label htmlFor="profile-email" className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
               <input
+                id="profile-email"
                 type="email"
                 value={profile.email}
                 disabled
@@ -178,8 +180,9 @@ const showPasswordSuccess=(msg)=>{
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Bio</label>
+              <label htmlFor="profile-bio" className="block text-sm font-medium text-slate-700 mb-1.5">Bio</label>
               <textarea
+                id="profile-bio"
                 value={profile.bio}
                 onChange={(e)=>{setProfile(prev=>({...prev,bio:e.target.value})); setProfileError(''); setProfileSuccess('');}}
                 placeholder="Tell us a little about yourself"
@@ -202,6 +205,7 @@ const showPasswordSuccess=(msg)=>{
           )}
           <div className="flex justify-center mt-5">
             <button
+              type="button"
               onClick={handleProfileSave}
               disabled={savingProfile}
               className="px-6 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors disabled:opacity-50 shadow-sm"
@@ -228,9 +232,10 @@ const showPasswordSuccess=(msg)=>{
           {isPasswordOpen &&(
             <div id="password-content" className="mt-5 space-y-4 animate-in slide-in-from-top-2 fade-in duration-500">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Current Password</label>
+                <label htmlFor="current-password" className="block text-sm font-medium text-slate-700 mb-1.5">Current Password</label>
                 <div className="relative">
                   <input
+                    id="current-password"
                     type={showPwd.current?'text':'password'}
                     value={passwords.currentPassword}
                     onChange={(e)=>{ setPasswords(prev =>({...prev, currentPassword:e.target.value})); setPasswordError(''); setPasswordSuccess('');}}
@@ -243,9 +248,10 @@ const showPasswordSuccess=(msg)=>{
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">New Password</label>
+                <label htmlFor="new-password" className="block text-sm font-medium text-slate-700 mb-1.5">New Password</label>
                 <div className="relative">
                   <input
+                    id="new-password"
                     type={showPwd.new ? 'text' : 'password'}
                     value={passwords.newPassword}
                     onChange={(e)=>{ setPasswords(prev=>({...prev,newPassword:e.target.value})); setPasswordError(''); setPasswordSuccess('');}}
@@ -258,9 +264,10 @@ const showPasswordSuccess=(msg)=>{
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Confirm New Password</label>
+                <label htmlFor="confirm-password" className="block text-sm font-medium text-slate-700 mb-1.5">Confirm New Password</label>
                 <div className="relative">
                   <input
+                    id="confirm-password"
                     type={showPwd.confirm?'text':'password'}
                     value={passwords.confirmPassword}
                     onChange={(e)=>{ setPasswords(prev=>({...prev,confirmPassword:e.target.value})); setPasswordError(''); setPasswordSuccess('');}}
@@ -286,6 +293,7 @@ const showPasswordSuccess=(msg)=>{
               )}
               <div className="flex justify-center mt-5">
                 <button
+                  type="button"
                   onClick={handlePasswordChange}
                   disabled={savingPassword}
                   className="px-6 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors disabled:opacity-50 shadow-sm"
@@ -301,6 +309,7 @@ const showPasswordSuccess=(msg)=>{
           <p className="text-sm text-slate-500 mb-5">Permanently delete your account and all your notes. This cannot be undone.</p>
           <div className="flex justify-center">
             <button
+              type="button"
               onClick={()=>setShowDeleteModal(true)}
               className="px-6 py-2.5 bg-red-500 text-white text-sm font-medium rounded-xl hover:bg-red-600 transition-colors shadow-sm"
             >
@@ -308,64 +317,76 @@ const showPasswordSuccess=(msg)=>{
             </button>
           </div>
         </div>
-        {showDeleteModal && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-            <div role="dialog" aria-modal="true" aria-labelledby="delete-modal-title" className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-lg">
-              <h3 id="delete-modal-title" className="text-lg font-semibold text-slate-900 mb-2">Delete account?</h3>
-              <p className="text-sm text-slate-500 mb-4">All your notes will be permanently deleted. This action cannot be undone.</p>
-              {deleteError &&(
-                <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-                  <p className="text-sm text-red-600">{deleteError}</p>
-                </div>
-              )}
-              <div className="flex justify-end gap-3">
-                <button
-                  autoFocus
-                  onClick={()=>{ setShowDeleteModal(false); setDeleteError(''); }}
-                  className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDeleteAccount}
-                  disabled={deleting}
-                  className="px-5 py-2 bg-red-500 text-white text-sm font-medium rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50"
-                >
-                  {deleting?'Deleting...':'Delete'}
-                </button>
+        {showDeleteModal &&(
+          <dialog
+            ref={(el)=>{if(el&&!el.open) el.showModal();}}
+            onCancel={()=>{setShowDeleteModal(false);setDeleteError('');}}
+            onClose={()=>{setShowDeleteModal(false);setDeleteError('');}}
+            aria-labelledby="delete-modal-title"
+            className="m-auto bg-white rounded-2xl p-6 max-w-sm w-full shadow-lg border-0 backdrop:bg-black/40"
+          >
+            <h3 id="delete-modal-title" className="text-lg font-semibold text-slate-900 mb-2">Delete account?</h3>
+            <p className="text-sm text-slate-500 mb-4">All your notes will be permanently deleted. This action cannot be undone.</p>
+            {deleteError&&(
+              <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                <p className="text-sm text-red-600">{deleteError}</p>
               </div>
+            )}
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                autoFocus
+                onClick={()=>{setShowDeleteModal(false);setDeleteError('');}}
+                className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteAccount}
+                disabled={deleting}
+                className="px-5 py-2 bg-red-500 text-white text-sm font-medium rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50"
+              >
+                {deleting?'Deleting...':'Delete'}
+              </button>
             </div>
-          </div>
+          </dialog>
         )}
         {showUnsavedModal &&(
-          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onKeyDown={(e)=>{if(e.key==='Escape') setShowUnsavedModal(false);}}>
-            <div role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title" className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-lg">
-              <h3 id="cancel-modal-title" className="text-base font-semibold text-slate-900 mb-1">Discard changes?</h3>
-              <p className="text-sm text-slate-500 mb-5">Your unsaved changes will be lost.</p>
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={()=>{
-                    setShowUnsavedModal(false);
-                    setPendingAction(null);
-                  }}
-                  className="px-4 py-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
-                >
-                  Keep editing
-                </button>
-                <button
-                  autoFocus 
-                  onClick={()=>{ 
-                    setShowUnsavedModal(false);
-                    executeAction(pendingAction); 
-                  }}
-                  className="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors"
-                >
-                  Discard
-                </button>
-              </div>
+          <dialog
+            ref={(el)=>{if(el&&!el.open) el.showModal();}}
+            onCancel={()=>{setShowUnsavedModal(false);setPendingAction(null);}}
+            onClose={()=>{setShowUnsavedModal(false);setPendingAction(null);}}
+            aria-labelledby="cancel-modal-title"
+            className="m-auto bg-white rounded-2xl p-6 max-w-sm w-full shadow-lg border-0 backdrop:bg-black/30"
+          >
+            <h3 id="cancel-modal-title" className="text-base font-semibold text-slate-900 mb-1">Discard changes?</h3>
+            <p className="text-sm text-slate-500 mb-5">Your unsaved changes will be lost.</p>
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={()=>{
+                  setShowUnsavedModal(false);
+                  setPendingAction(null);
+                }}
+                className="px-4 py-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
+              >
+                Keep editing
+              </button>
+              <button
+                type="button"
+                autoFocus 
+                onClick={()=>{ 
+                  setShowUnsavedModal(false);
+                  executeAction(pendingAction); 
+                }}
+                className="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors"
+              >
+                Discard
+              </button>
             </div>
-          </div>
+          </dialog>
         )}
       </main>
     </div>

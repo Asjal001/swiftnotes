@@ -17,6 +17,7 @@ const logger = pino(
   isDev ? {transport: {target: 'pino-pretty', options: {colorize: true}}}:{}
 );
 const app = express();
+app.disable('x-powered-by');
 app.use(pinoHttp({logger}));
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:3000'],
