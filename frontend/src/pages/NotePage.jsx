@@ -1,15 +1,17 @@
 import {useState,useEffect,useRef} from 'react';
 import {useParams,useNavigate} from 'react-router-dom';
-import {Loader2,AlertCircle} from 'lucide-react';
+import {Loader2,AlertCircle,Sparkles} from 'lucide-react';
 import api from '../api/axios';
 import NoteEditor from '../components/notes/NoteEditor';
 import Navbar from '../components/Navbar';
 import useAuth from '../hooks/useAuth';
+import ReactMarkdown from 'react-markdown';
 
 const NotePage=()=>{
   const {id}=useParams();
   const navigate=useNavigate();
   const {logout}=useAuth();
+  const editorRef=useRef(null);
   const isNew=id==='new';
   const [title,setTitle]=useState('');
   const [content,setContent]=useState('');
@@ -19,6 +21,7 @@ const NotePage=()=>{
   const [saveError,setSaveError]=useState('');
   const [showCancelModal,setShowCancelModal]=useState(false);
   const [pendingAction,setPendingAction]=useState(null);
+  const [summary,setSummary]=useState(null);
   const initialTitle=useRef('');
   const initialContent=useRef('');
   useEffect(()=>{
@@ -27,8 +30,10 @@ const NotePage=()=>{
       .then(res=>{
         const t=res.data.data.title;
         const c=res.data.data.content||'';
+        const s=res.data.data.summary || null;
         setTitle(t);
         setContent(c);
+        setSummary(s);
         initialTitle.current=t;
         initialContent.current=c;
       })
@@ -67,6 +72,7 @@ const NotePage=()=>{
     handleActionAttempt({type:'navigate',path:'/dashboard'});
   };
   const handleSave=async()=>{
+    editorRef.current?.stopRecording();
     if(!title.trim()){
       setSaveError('Title is required to save the note.');
       return;
@@ -121,9 +127,9 @@ const NotePage=()=>{
     );
   }
   return(
-    <div className="h-screen bg-gradient-to-b from-white via-[#f8faff] to-[#f0f2f9] font-sans flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-white via-[#f8faff] to-[#f0f2f9] font-sans flex flex-col">
       <Navbar onActionAttempt={handleActionAttempt}/>
-      <main className="flex-1 overflow-hidden flex flex-col max-w-4xl mx-auto w-full px-8">
+      <main className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-8 py-6">
         <div className="shrink-0 py-4">
           <input
             type="text"
@@ -133,10 +139,28 @@ const NotePage=()=>{
             className="text-3xl font-bold text-slate-900 placeholder-slate-300 border-none outline-none w-full bg-transparent"
           />
         </div>
-        <div className="flex-1 overflow-hidden min-h-0">
+        {summary && (
+          <div className="shrink-0 mb-4 p-4 rounded-xl border border-indigo-100 bg-indigo-50/50 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500 rounded-l-xl"></div>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-semibold text-indigo-900 flex items-center gap-2 text-sm">
+                <Sparkles size={16} className="text-indigo-600" />
+                AI Summary
+              </h3>
+            </div>
+            <div className="text-sm text-slate-700 leading-relaxed prose prose-slate max-w-none">
+              <ReactMarkdown>{summary}</ReactMarkdown>
+            </div>
+          </div>
+        )}
+        <div className="flex flex-col h-[250px] mb-6">
           <NoteEditor
+            ref={editorRef}
             content={content}
-            onChange={(val)=>{setContent(val);setSaveError('');}}
+            onChange={(val) => { setContent(val); setSaveError(''); }}
+            noteId={!isNew ? id : null}
+            onSummaryGenerated={(newSummary) => setSummary(newSummary)}
+            onError={(errMsg) => setSaveError(errMsg)}
           />
         </div>
         <div className="shrink-0 py-4">

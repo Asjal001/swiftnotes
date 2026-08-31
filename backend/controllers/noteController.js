@@ -1,5 +1,6 @@
 import * as noteService from '../services/noteService.js';
 import AppError from '../utils/AppError.js';
+import * as aiService from '../services/aiService.js';
 
 export const addNote= async(req,res,next)=>{
   try{
@@ -49,6 +50,53 @@ export const deleteNote= async(req,res,next)=>{
     await noteService.deleteNote(id,req.user.userId);
     res.status(204).send();
   } catch(err){
+    next(err);
+  }
+};
+export const summarizeNote = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const note = await noteService.getNote(id, req.user.userId);
+    if (!note) throw new AppError('Note not found', 404);
+
+    const summary = await aiService.generateNoteSummary(note.content);
+    const updatedNote = await noteService.updateNoteSummary(id, req.user.userId, summary);
+    
+    res.json({ data: updatedNote });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const transcribeVoice = async (req, res, next) => {
+  try {
+    const { audioBase64, mimeType } = req.body ?? {};
+    if (!audioBase64) throw new AppError('Audio data required', 400);
+
+    const text = await aiService.transcribeAudioNote(audioBase64, mimeType);
+    res.json({ data: { text } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const toggleShareNote = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const shareToken = await noteService.generateShareToken(id, req.user.userId);
+    res.json({ data: { shareToken } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getSharedNote = async (req, res, next) => {
+  try {
+    const { shareToken } = req.params;
+    const note = await noteService.getSharedNote(shareToken);
+    if (!note) throw new AppError('Note not found or link has expired', 404);
+    res.json({ data: note });
+  } catch (err) {
     next(err);
   }
 };

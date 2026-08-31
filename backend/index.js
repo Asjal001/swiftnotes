@@ -7,7 +7,7 @@ import authRoutes from './routes/authRoutes.js'
 import noteRoutes from './routes/noteRoutes.js'
 import userRoutes from './routes/userRoutes.js'
 dotenv.config();
-if (!process.env.JWT_SECRET){
+if (!process.env.JWT_SECRET || !process.env.GEMINI_API_KEY){
   console.error('JWT_SECRET is not set, exiting');
   process.exit(1);
 }
@@ -23,7 +23,7 @@ app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:3000'],
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use('/api/auth',authRoutes);
 app.use('/api/notes',noteRoutes);
 app.use('/api/user', userRoutes);

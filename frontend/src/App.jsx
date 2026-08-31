@@ -7,6 +7,7 @@ import SignUp from './pages/SignUp';
 import Dashboard from './pages/Dashboard';
 import NotePage from './pages/NotePage';
 import ProfilePage from './pages/ProfilePage';
+import SharedNotePage from './pages/SharedNotePage';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/shared/:shareToken" element={<SharedNotePage />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/notes/:id" element={<ProtectedRoute><NotePage /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />

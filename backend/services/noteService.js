@@ -1,5 +1,6 @@
 import prisma from '../db.js';
 import AppError from '../utils/AppError.js';
+import crypto from 'node:crypto';
 
 export const addNote=async(userId,title,content)=>{
   try{
@@ -56,5 +57,60 @@ export const deleteNote=async(noteId,userId)=>{
   } catch(err){
     if(err instanceof AppError) throw err;
     throw new AppError(err.message||'Failed to delete note',500);
+  }
+};
+export const updateNoteSummary = async (noteId, userId, summary) => {
+  try {
+    const note = await prisma.note.findFirst({ where: { id: noteId, userId } });
+    if (!note) throw new AppError('Note not found', 404);
+
+    return await prisma.note.update({
+      where: { id: noteId },
+      data: { summary }
+    });
+  } catch (err) {
+    if (err instanceof AppError) throw err;
+    throw new AppError(err.message || 'Failed to update note summary', 500);
+  }
+};
+
+export const generateShareToken = async (noteId, userId) => {
+  try {
+    const note = await prisma.note.findFirst({ where: { id: noteId, userId } });
+    if (!note) throw new AppError('Note not found', 404);
+
+    const shareToken = note.shareToken || crypto.randomUUID();
+    
+    const updated = await prisma.note.update({
+      where: { id: noteId },
+      data: { isShared: true, shareToken }
+    });
+
+    return updated.shareToken;
+  } catch (err) {
+    if (err instanceof AppError) throw err;
+    throw new AppError(err.message || 'Failed to generate share token', 500);
+  }
+};
+
+export const getSharedNote = async (shareToken) => {
+  try {
+    const note = await prisma.note.findUnique({
+      where: { shareToken, isShared: true },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        summary: true,
+        updatedAt: true,
+        user: { select: { name: true } }
+      }
+    });
+
+    if (!note) throw new AppError('Note not found or link has expired', 404);
+    return note;
+  } catch (err) {
+    if (err instanceof AppError) throw err;
+    throw new AppError(err.message || 'Failed to fetch shared note', 500);
   }
 };

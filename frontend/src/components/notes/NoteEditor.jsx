@@ -1,9 +1,9 @@
 import {useEditor,EditorContent} from '@tiptap/react';
-import {useEffect} from 'react';
+import {useEffect,forwardRef} from 'react';
 import StarterKit from '@tiptap/starter-kit';
 import EditorToolbar from './EditorToolbar';
 
-const NoteEditor=({content,onChange})=>{
+const NoteEditor=forwardRef(({content,onChange,noteId,onSummaryGenerated,onError},ref)=>{
   const editor=useEditor({
     extensions:[StarterKit],
     content,
@@ -25,11 +25,11 @@ const NoteEditor=({content,onChange})=>{
   }, [content, editor]);
   return (
     <div className="border border-slate-200 rounded-xl overflow-hidden flex flex-col h-full">
-      <EditorToolbar editor={editor} />
+      <EditorToolbar ref={ref} editor={editor} noteId={noteId} onSummaryGenerated={onSummaryGenerated} onError={onError}/>
       <div className="flex-1 overflow-y-auto">
         <EditorContent editor={editor} />
       </div>
     </div>
   );
-};
+});
 export default NoteEditor;

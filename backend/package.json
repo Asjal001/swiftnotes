@@ -10,7 +10,10 @@
     "test:coverage": "c8 node --experimental-vm-modules node_modules/mocha/bin/mocha.js tests/**/*.test.js"
   },
   "c8": {
-    "reporter": ["lcov", "text"],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
     "include": [
       "services/**/*.js",
       "controllers/**/*.js",
@@ -25,6 +28,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@google/genai": "^2.19.0",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "bcrypt": "^6.0.0",
