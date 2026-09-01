@@ -44,3 +44,4 @@ process.on('unhandledRejection', (reason)=>{
   logger.error({reason},'Unhandled rejection');
   process.exit(1);
 });
+export default app;
