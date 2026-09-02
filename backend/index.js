@@ -19,8 +19,13 @@ const logger = pino(
 const app = express();
 app.disable('x-powered-by');
 app.use(pinoHttp({logger}));
+const allowedOrigins = [
+  'https://swiftnotes-umber.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://swiftnotes-umber.vercel.app'],
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
